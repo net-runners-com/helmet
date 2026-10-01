@@ -1,0 +1,7 @@
+name = "helmet-minimal"
+pages_build_output_dir = "dist"
+compatibility_date = "2026-09-01"
+
+[vars]
+# Cloudflare's always-pass Turnstile test key. Replace before relying on it.
+TURNSTILE_SITEKEY = "1x00000000000000000000AA"

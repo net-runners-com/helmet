@@ -1,0 +1,18 @@
+{
+  "name": "helmet",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build:assets": ".venv/bin/python build/make_assets.py",
+    "build:client": "node build/obfuscate.mjs",
+    "build": "npm run build:assets && npm run build:client",
+    "dev": "npm run build && wrangler dev",
+    "deploy": "npm run build && wrangler deploy"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5.20260930.2",
+    "javascript-obfuscator": "^5.8.1",
+    "typescript": "^7.0.2",
+    "wrangler": "^4.145.0"
+  }
+}

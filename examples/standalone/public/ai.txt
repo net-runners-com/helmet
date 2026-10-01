@@ -1,0 +1,6 @@
+# (c) 2026 Helmet. All rights reserved.
+# No use of any content on this site (text, images, video, code, design) for
+# AI/ML training, fine-tuning, retrieval, or generation of derivative sites.
+User-Agent: *
+Disallow: /
+Disallow: *

@@ -1,0 +1,7 @@
+html, body { margin: 0; background: #0e1320; color: #c9d1e0; font-family: system-ui, sans-serif; }
+body { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+main { display: flex; flex-direction: column; align-items: center; padding: 24px 0 64px; }
+#gate { display: flex; flex-direction: column; align-items: center; gap: 12px; padding-top: 20vh; }
+canvas { display: block; -webkit-user-drag: none; }
+body[data-state="wiped"] main::after { content: "表示を停止しました。"; padding-top: 20vh; }
+@media print { body { display: none !important; } }

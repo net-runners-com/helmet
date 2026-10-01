@@ -1,0 +1,17 @@
+{
+  "name": "@helmet/runtime",
+  "version": "0.1.0",
+  "description": "Helmet browser runtime: encrypted session, decoy-font loading, masked assets, screenshot forensics, structure noise, deterrents.",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./src/index.d.ts",
+      "default": "./src/index.js"
+    }
+  },
+  "files": ["src"],
+  "dependencies": {
+    "@helmet/core": "0.1.0"
+  },
+  "license": "UNLICENSED"
+}

@@ -1,0 +1,17 @@
+{
+  "name": "@helmet/worker",
+  "version": "0.1.0",
+  "description": "Cloudflare Worker/Pages factory for Helmet: bot blocking, headers, encrypted session, signed masked assets.",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./src/index.d.ts",
+      "default": "./src/index.js"
+    }
+  },
+  "files": ["src"],
+  "dependencies": {
+    "@helmet/core": "0.1.0"
+  },
+  "license": "UNLICENSED"
+}

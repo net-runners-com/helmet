@@ -1,0 +1,21 @@
+{
+  "name": "@helmet/core",
+  "version": "0.1.0",
+  "description": "Shared primitives for Helmet: obfuscation engine, isomorphic crypto, config defaults.",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./src/index.d.ts",
+      "default": "./src/index.js"
+    },
+    "./runtime": {
+      "types": "./src/runtime.d.ts",
+      "default": "./src/runtime.js"
+    }
+  },
+  "files": ["src"],
+  "scripts": {
+    "test": "node --test test/*.mjs"
+  },
+  "license": "UNLICENSED"
+}

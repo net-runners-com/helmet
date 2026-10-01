@@ -1,0 +1,12 @@
+node_modules/
+dist/
+.wrangler/
+.helmet/
+.venv/
+.dev.vars
+.cfauth/
+*.log
+
+# standalone example build artifacts
+examples/standalone/src/generated/
+examples/standalone/public/app.js

@@ -1,0 +1,31 @@
+{
+  "fontsSrc": "fonts-src",
+  "faces": {
+    "body": {
+      "file": "Body.ttf",
+      "family": "Body",
+      "weight": "500",
+      "style": "normal"
+    },
+    "display": {
+      "file": "Display.ttf",
+      "family": "Display",
+      "weight": "700",
+      "style": "normal"
+    }
+  },
+  "variants": 8,
+  "homophones": 10,
+  "images": {
+    "dir": "images-src",
+    "watermark": "HELMETMN",
+    "quality": 90,
+    "out": "img"
+  },
+  "renderedPath": ".helmet/rendered.json",
+  "out": {
+    "protected": "dist/_p",
+    "public": "dist",
+    "work": ".helmet"
+  }
+}

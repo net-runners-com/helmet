@@ -1,0 +1,22 @@
+{
+  "name": "helmet-monorepo",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Helmet — a reusable mechanism to raise the cost of cloning a website and to leave evidence when it is copied.",
+  "workspaces": [
+    "packages/*",
+    "examples/minimal"
+  ],
+  "scripts": {
+    "test": "npm test --workspaces --if-present",
+    "build:example": "npm run build -w @helmet/example-minimal",
+    "dev:example": "npm run dev -w @helmet/example-minimal"
+  },
+  "devDependencies": {
+    "vite": "^8.3.1",
+    "wrangler": "^4.145.0",
+    "esbuild": "^0.28.2"
+  },
+  "license": "UNLICENSED"
+}

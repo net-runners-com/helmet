@@ -1,0 +1,21 @@
+{
+  "name": "@helmet/build",
+  "version": "0.1.0",
+  "description": "Helmet build tools: Vite plugin for class/id/JS obfuscation and the public-file allowlist.",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./src/index.d.ts",
+      "default": "./src/index.js"
+    }
+  },
+  "files": ["src"],
+  "dependencies": {
+    "@helmet/core": "0.1.0",
+    "javascript-obfuscator": "^5.8.1"
+  },
+  "peerDependencies": {
+    "vite": ">=5"
+  },
+  "license": "UNLICENSED"
+}
