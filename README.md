@@ -175,6 +175,30 @@ readable (non-obfuscated) class/id names in `index.html`, or an allowlist that
 exposes a protected path. Chain it last in the build (`… && helmet audit dist
 --copy .helmet/rendered.json`) so a regression can't ship.
 
+## Proof of existence (timestamp)
+
+`helmet timestamp stamp <distDir>` hashes every built file into a manifest and
+timestamps it with [OpenTimestamps](https://opentimestamps.org) (anchored to
+Bitcoin). This is **anteriority evidence** — proof the content existed at a time,
+which helps a priority claim in a dispute. A few hours later, `helmet timestamp
+upgrade manifest.sha256.ots` anchors it; keep the manifest + `.ots` as your proof.
+
+> It does **not** make anything unique or exclusive, and does not prevent copying.
+> "Own it on-chain" / NFT framing is marketing, not enforceable exclusivity. Run it
+> as a release step (it contacts public calendar servers), not on every build.
+
+## Similarity monitoring
+
+`helmet monitor <baseline.png> <suspect.png> …` compares a key screen against
+suspect screenshots with a perceptual hash (pHash) and reports Hamming distance —
+small distance = visually alike despite re-encoding/resizing/light edits, for
+spotting clones and look-alikes once you have a candidate image. Combine with
+`decode-canary` (text) and the structure-noise canary (DOM) for copy detection.
+
+> Finding candidates (web/reverse-image search) needs a search API key and is out
+> of scope here. And a merely *similar* service is usually lawful competition — this
+> is for early awareness and catching actual infringement, not for stopping rivals.
+
 ## Legal pages
 
 `helmet legal --name "<Site>" [--url …] [--email …] --out public` generates the

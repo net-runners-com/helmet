@@ -26,6 +26,14 @@ switch (cmd) {
     if (!args.length) fail("usage: helmet decode-screenshot <image> [more...]");
     uv("helmet_decode.py", args, ["numpy", "opencv-python-headless"]);
     break;
+  case "monitor":
+    if (!args.length) fail('usage: helmet monitor <baseline.png> <suspect.png> [...]  |  helmet monitor --hash <img>');
+    uv("helmet_monitor.py", args, ["numpy", "opencv-python-headless"]);
+    break;
+  case "timestamp":
+    if (!args.length) fail("usage: helmet timestamp stamp <dir> [--out dir] | upgrade <f.ots> | verify <manifest> <f.ots>");
+    uv("helmet_timestamp.py", args, ["opentimestamps-client"]);
+    break;
   case "verify-watermark":
     if (args.length < 2) fail("usage: helmet verify-watermark <text> <image> [more...]");
     uv("helmet_verify.py", args, ["numpy", "opencv-python-headless", "invisible-watermark"]);
@@ -89,6 +97,8 @@ switch (cmd) {
   decode-screenshot <img> [...]     recover a session id from a leaked screenshot
   decode-canary "<text>"            recover a session id from leaked (invisible-marked) text
   verify-watermark <text> <img>...  check the invisible image watermark
+  monitor <base.png> <suspect>...   perceptual-hash similarity (clone / look-alike detection)
+  timestamp stamp <dir>             proof-of-existence of a build via OpenTimestamps (Bitcoin)
   init                              write starter helmet.config.js / helmet.assets.json
 `);
     process.exit(cmd ? 1 : 0);
