@@ -5,6 +5,7 @@ import { writeFileSync, readFileSync, existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { writePublicAllowlist, collectNames, auditDist, writeLegal } from "@helmet/build";
 import { extractTextCanary, stripCanary } from "@helmet/core";
+import { hunt, huntKeywords } from "./hunt.js";
 
 const PY_DIR = fileURLToPath(new URL("../../../py/", import.meta.url));
 const UV_WITH = ["fonttools", "brotli", "numpy", "opencv-python-headless", "invisible-watermark"];
@@ -88,6 +89,40 @@ switch (cmd) {
     console.log(`helmet legal: wrote ${files.length} files to ${out}/:\n  ${files.join("\n  ")}`);
     break;
   }
+  case "hunt": {
+    const opt = (k, d) => { const i = args.indexOf(k); return i >= 0 ? args[i + 1] : d; };
+    if (args[0] === "keywords") {
+      const target = opt("--target");
+      if (!target) fail('usage: helmet hunt keywords --target <url> [--out keywords.txt]');
+      huntKeywords({ target, out: opt("--out", "keywords.txt") })
+        .then((r) => { console.log(`hunt: ${r.keywords.length} keywords from ${target} -> ${opt("--out", "keywords.txt")}`); console.log(r.keywords.map((k) => "  " + k).join("\n")); })
+        .catch((e) => fail("hunt: " + e.message));
+      break;
+    }
+    const keywordsFile = opt("--keywords");
+    if (!keywordsFile) fail('usage: helmet hunt --keywords <file> [--target <url>] [--verify] [--phrases f] [--exclude a,b] [--out results.json] [--limit N]');
+    hunt({
+      keywordsFile,
+      target: opt("--target"),
+      phrasesFile: opt("--phrases"),
+      exclude: (opt("--exclude", "") || "").split(",").map((s) => s.trim()).filter(Boolean),
+      out: opt("--out", "hunt-results.json"),
+      verify: args.includes("--verify"),
+      limit: Number(opt("--limit", "40")),
+    }).then((r) => {
+      console.log(`hunt: ${r.web.length} web candidates (excluding big players${r.target ? " + " + new URL(r.target).hostname : ""})`);
+      for (const c of r.web.slice(0, 25)) {
+        const tags = [];
+        if (c.fingerprint) tags.push("FINGERPRINT");
+        if (c.verbatim?.length) tags.push(`${c.verbatim.length} verbatim`);
+        console.log(`  [${c.score}] ${c.domain}${tags.length ? "  <<< " + tags.join(", ") : ""}  (${c.keywords.slice(0, 2).join(" / ")})`);
+      }
+      console.log(`\nnote.com hits: ${r.note.length}`);
+      for (const n of r.note.slice(0, 12)) console.log(`  @${n.user}: ${n.title}  ${n.url}`);
+      console.log(`\nfull results -> ${opt("--out", "hunt-results.json")}`);
+    }).catch((e) => fail("hunt: " + e.message));
+    break;
+  }
   case "init":
     scaffold();
     break;
@@ -104,6 +139,8 @@ switch (cmd) {
   verify-watermark <text> <img>...  check the invisible image watermark
   monitor <base.png> <suspect>...   perceptual-hash similarity (clone / look-alike detection)
   monitor scan --searx <url> ...    find clone candidates via SearXNG, flag canary/phrase hits
+  hunt keywords --target <url>      auto-build a clone-hunt keyword list from your site
+  hunt --keywords <f> [--verify]    search (DuckDuckGo + note) for copies, verify verbatim/fingerprint
   timestamp stamp <dir>             proof-of-existence of a build via OpenTimestamps (Bitcoin)
   c2pa sign|verify <image>          embed / read signed Content Credentials (provenance)
   init                              write starter helmet.config.js / helmet.assets.json

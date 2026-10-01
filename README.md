@@ -250,6 +250,27 @@ search has no good open option — compare screens with `helmet monitor` (pHash)
 > A merely *similar* service is usually lawful competition — this is for early
 > awareness and catching actual infringement, not for stopping rivals.
 
+### Clone hunting (`helmet hunt`)
+
+For a site that does **not** carry Helmet's canaries (an existing site, or someone
+else's copy), hunt by its own distinctive copy instead:
+
+```bash
+helmet hunt keywords --target https://yoursite.com --out keywords.txt   # auto-build the list
+helmet hunt --keywords keywords.txt --target https://yoursite.com --verify --out results.json
+```
+
+It runs each keyword through **DuckDuckGo** (open web) and **note.com**, collects
+candidate sites (excluding big players and your own domain), and — with `--verify`
+— fetches each candidate and checks it for your site's **verbatim copy** and
+**CSS-module fingerprints**, so a rebuilt-but-copied clone still scores
+(`FINGERPRINT` / `N verbatim` tags). Pure fetch, no browser or API key. A clone that
+*paraphrased* your copy won't trip `--verify` but still surfaces as a candidate (and
+note posts promoting it often surface the clone's URL directly) — review the top
+hits by hand. Social platforms (X / Threads / Instagram) gate search behind login
+and are out of scope; for login-gated or bot-blocked engines (publicwww, etc.) drive
+a stealth browser (e.g. the `webtrace` tooling) with a logged-in profile instead.
+
 ## Legal pages
 
 `helmet legal --name "<Site>" [--url …] [--email …] --out public` generates the
