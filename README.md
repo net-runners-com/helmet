@@ -211,6 +211,12 @@ manifest is removed) is filled by the **invisible DWT-DCT-SVD image watermark**
 SynthID only becomes available if you *generate* assets through Google's stack,
 in which case the images already carry it and Helmet simply leaves it intact.
 
+The C2PA + SynthID "two layers" model (rich signed metadata + a watermark that
+survives metadata loss) is described here:
+[C2PA × SynthID でコンテンツ来歴を守る (Qiita)](https://qiita.com/kai_kou/items/1e7a5ed2ee470ebed394).
+Helmet realizes the same two layers as **C2PA (signed metadata) + DWT-DCT-SVD
+(strip-resistant watermark)**.
+
 ## Proof of existence (timestamp)
 
 `helmet timestamp stamp <distDir>` hashes every built file into a manifest and
