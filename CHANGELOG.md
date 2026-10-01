@@ -27,8 +27,10 @@ Initial extraction of the Helmet mechanism into reusable packages.
   `legal` (terms / ai-policy / robots / ai.txt / tdmrep), and `decode-canary`.
 - Worker now serves policy/legal pages (and their clean URLs) to blocked agents so
   the prohibition is discoverable.
-- `@helmet/cli` + py: `c2pa` sign/verify — embed signed C2PA Content Credentials
-  (provenance: author, copyright, who/when/how) into distributed images.
+- `@helmet/cli` + py: `c2pa` sign/verify — signed C2PA Content Credentials
+  (provenance + a signed CAWG "Do Not Train" AI opt-out) in distributed images.
+  SynthID is documented as not self-adoptable (proprietary); the open DWT-DCT-SVD
+  watermark fills its metadata-strip-survival role.
 - `@helmet/cli` + py: `monitor` (perceptual-hash clone / look-alike detection) and
   `timestamp` (OpenTimestamps proof-of-existence of a build, anchored to Bitcoin).
 - `examples/night-runner` — full complex site (comic shader / GSAP / Lottie / 193

@@ -178,15 +178,38 @@ exposes a protected path. Chain it last in the build (`… && helmet audit dist
 ## Content Credentials (C2PA)
 
 `helmet c2pa sign <image> --author "<name>" --copyright "<notice>"` embeds a
-cryptographically signed [C2PA](https://c2pa.org) provenance manifest (who / when /
-how, author, copyright) into an image; `helmet c2pa verify <image>` reads it and
-reports the validation state. Signed and tamper-evident, it is a stronger origin
-claim than a bare watermark — apply it to images you **distribute publicly**
-(press kit, og:image, downloads), not to the masked in-session assets.
+cryptographically signed [C2PA](https://c2pa.org) provenance manifest into an image;
+`helmet c2pa verify <image>` reads it and reports the validation state. Signed and
+tamper-evident, it is a stronger origin claim than a bare watermark — apply it to
+images you **distribute publicly** (press kit, og:image, downloads), not to the
+masked in-session assets. The manifest carries:
+
+- **provenance** — author, copyright, created action, digital source type;
+- **a signed "Do Not Train" opt-out** (CAWG `cawg.training-mining`: generative
+  training / inference / training / data-mining all `notAllowed`) — a
+  machine-readable AI-training refusal baked into the asset, complementing
+  `robots.txt` / `ai.txt` / TDMRep. Pass `--allow-train` to drop it.
 
 > The demo auto-generates a local CA + leaf certificate (`.helmet/c2pa/`). Validators
 > show the credential but flag the signer as untrusted; for production, sign with a
 > certificate from a C2PA-recognized authority. Needs `openssl`.
+
+### SynthID — why it is not adopted
+
+[SynthID](https://deepmind.google/technologies/synthid/) (Google DeepMind) is the
+natural complement to C2PA — an imperceptible watermark that **survives metadata
+stripping**, where C2PA's signed manifest does not. But it **cannot be self-adopted**:
+for images it is applied only at *generation time* by Google/partner models
+(Imagen, Vertex AI, …), and **detection requires Google's proprietary,
+waitlisted infrastructure** — there is no open library to embed or detect it on
+arbitrary images. SynthID Text is open-sourced, but it watermarks *LLM-generated*
+text by biasing sampling, so it does not apply to human-written copy either.
+
+In Helmet, the role SynthID would play (a watermark that persists after the C2PA
+manifest is removed) is filled by the **invisible DWT-DCT-SVD image watermark**
+(`helmet verify-watermark`). It is weaker than SynthID but open and self-hostable.
+SynthID only becomes available if you *generate* assets through Google's stack,
+in which case the images already carry it and Helmet simply leaves it intact.
 
 ## Proof of existence (timestamp)
 

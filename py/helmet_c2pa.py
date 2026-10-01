@@ -60,22 +60,35 @@ def ensure_cert(cert_path, key_path):
 DEFAULT_SOURCE_TYPE = "http://cv.iptc.org/newscodes/digitalsourcetype/digitalCapture"
 
 
-def default_manifest(title, author, copyright_, source_type):
+# CAWG "training & data mining" assertion: a signed, machine-readable AI opt-out
+# embedded in the asset itself — complements robots.txt / ai.txt / TDMRep.
+NO_TRAIN = {
+    "label": "cawg.training-mining",
+    "data": {"entries": {
+        "cawg.ai_generative_training": {"use": "notAllowed"},
+        "cawg.ai_inference": {"use": "notAllowed"},
+        "cawg.ai_training": {"use": "notAllowed"},
+        "cawg.data_mining": {"use": "notAllowed"},
+    }},
+    "kind": "Json",
+}
+
+
+def default_manifest(title, author, copyright_, source_type, no_train=True):
     cw = {"@context": "https://schema.org", "@type": "CreativeWork"}
     if author:
         cw["author"] = [{"@type": "Person", "name": author}]
     if copyright_:
         cw["copyrightNotice"] = copyright_
-    return {
-        "claim_generator": "Helmet/0.1",
-        "title": title,
-        "assertions": [
-            {"label": "c2pa.actions", "data": {"actions": [
-                {"action": "c2pa.created", "digitalSourceType": source_type},
-            ]}},
-            {"label": "stds.schema-org.CreativeWork", "data": cw, "kind": "Json"},
-        ],
-    }
+    assertions = [
+        {"label": "c2pa.actions", "data": {"actions": [
+            {"action": "c2pa.created", "digitalSourceType": source_type},
+        ]}},
+        {"label": "stds.schema-org.CreativeWork", "data": cw, "kind": "Json"},
+    ]
+    if no_train:
+        assertions.append(NO_TRAIN)
+    return {"claim_generator": "Helmet/0.1", "title": title, "assertions": assertions}
 
 
 MIME = {".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".png": "image/png", ".webp": "image/webp"}
@@ -92,7 +105,7 @@ def sign(argv):
     if "--manifest" in argv:
         manifest = json.loads(Path(opt("--manifest")).read_text())
     else:
-        manifest = default_manifest(img.name, opt("--author"), opt("--copyright"), opt("--source-type", DEFAULT_SOURCE_TYPE))
+        manifest = default_manifest(img.name, opt("--author"), opt("--copyright"), opt("--source-type", DEFAULT_SOURCE_TYPE), no_train="--allow-train" not in argv)
 
     info = C2paSignerInfo(
         alg=b"es256",
@@ -132,6 +145,10 @@ def verify(argv):
             d = a.get("data", {})
             print(f"  author: {d.get('author')}")
             print(f"  copyright: {d.get('copyrightNotice')}")
+        if a.get("label") == "cawg.training-mining":
+            entries = a.get("data", {}).get("entries", {})
+            uses = {k.split(".")[-1]: v.get("use") for k, v in entries.items()}
+            print(f"  AI training/mining: {uses}")
 
 
 def main(argv):
