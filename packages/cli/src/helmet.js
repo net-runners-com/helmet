@@ -27,7 +27,8 @@ switch (cmd) {
     uv("helmet_decode.py", args, ["numpy", "opencv-python-headless"]);
     break;
   case "monitor":
-    if (!args.length) fail('usage: helmet monitor <baseline.png> <suspect.png> [...]  |  helmet monitor --hash <img>');
+    if (args[0] === "scan") { monitorScan(args.slice(1)); break; }
+    if (!args.length) fail('usage: helmet monitor <baseline.png> <suspect.png> [...]  |  monitor scan --searx <url> ...  |  monitor --hash <img>');
     uv("helmet_monitor.py", args, ["numpy", "opencv-python-headless"]);
     break;
   case "timestamp":
@@ -102,6 +103,7 @@ switch (cmd) {
   decode-canary "<text>"            recover a session id from leaked (invisible-marked) text
   verify-watermark <text> <img>...  check the invisible image watermark
   monitor <base.png> <suspect>...   perceptual-hash similarity (clone / look-alike detection)
+  monitor scan --searx <url> ...    find clone candidates via SearXNG, flag canary/phrase hits
   timestamp stamp <dir>             proof-of-existence of a build via OpenTimestamps (Bitcoin)
   c2pa sign|verify <image>          embed / read signed Content Credentials (provenance)
   init                              write starter helmet.config.js / helmet.assets.json
@@ -110,6 +112,67 @@ switch (cmd) {
 }
 
 function fail(msg) { console.error(msg); process.exit(1); }
+
+// monitor scan: find candidate clone sites via a SearXNG instance, then flag the
+// ones that carry our canary (zero-width text id or the DOM canary prefix) or quote
+// our distinctive phrases. Needs only a SearXNG URL (public instance or self-hosted).
+async function monitorScan(a) {
+  const opt = (k, d) => { const i = a.indexOf(k); return i >= 0 ? a[i + 1] : d; };
+  const searx = opt("--searx");
+  if (!searx) fail('usage: helmet monitor scan --searx <url> (--phrases file.txt | --phrase "...") [--exclude yourdomain.com] [--canary hlm] [--limit 20]');
+  const canaryPrefix = opt("--canary", "hlm");
+  const exclude = opt("--exclude", "");
+  const limit = Number(opt("--limit", "20"));
+  let phrases = a.filter((_, i) => a[i - 1] === "--phrase");
+  const pf = opt("--phrases");
+  if (pf && existsSync(pf)) phrases = phrases.concat(readFileSync(pf, "utf8").split("\n").map((s) => s.trim()).filter(Boolean));
+  if (!phrases.length) fail("provide --phrase \"...\" (repeatable) or --phrases file.txt");
+
+  const base = searx.replace(/\/+$/, "");
+  const seen = new Map(); // url -> matched phrases
+  for (const q of phrases) {
+    let json;
+    try {
+      const r = await fetch(`${base}/search?q=${encodeURIComponent(q)}&format=json&safesearch=0`, { headers: { Accept: "application/json" } });
+      if (!r.ok) { console.warn(`⚠ searx "${q.slice(0, 30)}…" -> ${r.status} (is JSON output enabled on this instance?)`); continue; }
+      json = await r.json();
+    } catch (e) { console.warn(`⚠ searx query failed: ${e.message}`); continue; }
+    for (const res of json.results ?? []) {
+      const url = res.url;
+      if (!url || (exclude && url.includes(exclude))) continue;
+      if (!seen.has(url)) seen.set(url, new Set());
+      seen.get(url).add(q);
+    }
+  }
+  const candidates = [...seen.keys()].slice(0, limit);
+  console.log(`scan: ${phrases.length} phrases -> ${seen.size} candidate URLs${seen.size > limit ? ` (checking first ${limit})` : ""}`);
+
+  const findings = [];
+  for (const url of candidates) {
+    let html = "";
+    try {
+      const r = await fetch(url, { headers: { "User-Agent": "Mozilla/5.0" }, redirect: "follow" });
+      html = await r.text();
+    } catch { continue; }
+    const domCanary = html.includes("data-" + canaryPrefix) || html.includes(canaryPrefix + ":");
+    const textSid = extractTextCanary(html);
+    const phraseHits = [...seen.get(url)].filter((p) => html.includes(p));
+    const score = (textSid !== null ? 100 : 0) + (domCanary ? 50 : 0) + phraseHits.length;
+    if (score > 0) findings.push({ url, textSid, domCanary, phraseHits, score });
+  }
+  findings.sort((x, y) => y.score - x.score);
+  if (!findings.length) { console.log("scan: no candidates carried a canary or quoted a phrase."); process.exit(0); }
+  console.log(`\nscan: ${findings.length} flagged (strongest first):`);
+  for (const f of findings) {
+    const tags = [];
+    if (f.textSid !== null) tags.push(`TEXT-CANARY sid=${f.textSid.toString(16).padStart(8, "0")}`);
+    if (f.domCanary) tags.push("DOM-CANARY");
+    if (f.phraseHits.length) tags.push(`${f.phraseHits.length} phrase match`);
+    console.log(`  [${f.score}] ${f.url}\n        ${tags.join(", ")}`);
+  }
+  console.log("\nCanary hits are strong evidence the copy came from your site; verify images with `helmet verify-watermark` and compare screens with `helmet monitor <base> <suspect>`.");
+  process.exit(0);
+}
 
 function scaffold() {
   const cfg = `import { defineConfig } from "@helmet/core";

@@ -237,9 +237,18 @@ small distance = visually alike despite re-encoding/resizing/light edits, for
 spotting clones and look-alikes once you have a candidate image. Combine with
 `decode-canary` (text) and the structure-noise canary (DOM) for copy detection.
 
-> Finding candidates (web/reverse-image search) needs a search API key and is out
-> of scope here. And a merely *similar* service is usually lawful competition — this
-> is for early awareness and catching actual infringement, not for stopping rivals.
+`helmet monitor scan --searx <url> --phrase "<distinctive line>" [--phrases file]
+[--exclude yourdomain] [--canary hlm]` searches a [SearXNG](https://searxng.org)
+instance for your distinctive phrases, fetches each candidate page, and flags the
+ones that carry your **text canary** (recovers the session id), your **DOM canary**
+prefix, or quote your phrases — ranked strongest-first. SearXNG is open-source and
+needs no API key; point at a public instance or self-host one (`--searx` is the only
+requirement — no Docker needed to *use* it). Note many public instances disable JSON
+output, so a self-hosted or JSON-enabled instance is most reliable. Reverse-image
+search has no good open option — compare screens with `helmet monitor` (pHash).
+
+> A merely *similar* service is usually lawful competition — this is for early
+> awareness and catching actual infringement, not for stopping rivals.
 
 ## Legal pages
 

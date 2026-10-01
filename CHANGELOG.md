@@ -31,6 +31,8 @@ Initial extraction of the Helmet mechanism into reusable packages.
   (provenance + a signed CAWG "Do Not Train" AI opt-out) in distributed images.
   SynthID is documented as not self-adoptable (proprietary); the open DWT-DCT-SVD
   watermark fills its metadata-strip-survival role.
+- `@helmet/cli`: `monitor scan` — SearXNG-backed clone candidate search that flags
+  text/DOM canary and phrase hits (no API key; self-host or public instance).
 - `@helmet/cli` + py: `monitor` (perceptual-hash clone / look-alike detection) and
   `timestamp` (OpenTimestamps proof-of-existence of a build, anchored to Bitcoin).
 - `examples/night-runner` — full complex site (comic shader / GSAP / Lottie / 193
