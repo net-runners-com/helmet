@@ -1,0 +1,17 @@
+{
+  "fontsSrc": "helmet/fonts-src",
+  "faces": {
+    "bangers": { "file": "Bangers-Regular.ttf", "family": "Bangers", "weight": "400", "style": "normal" },
+    "barlow-500": { "file": "BarlowCondensed-Medium.ttf", "family": "Barlow Condensed", "weight": "500", "style": "normal" },
+    "barlow-700": { "file": "BarlowCondensed-Bold.ttf", "family": "Barlow Condensed", "weight": "700", "style": "normal" },
+    "barlow-600i": { "file": "BarlowCondensed-SemiBoldItalic.ttf", "family": "Barlow Condensed", "weight": "600", "style": "italic" },
+    "barlow-800i": { "file": "BarlowCondensed-ExtraBoldItalic.ttf", "family": "Barlow Condensed", "weight": "800", "style": "italic" }
+  },
+  "variants": 8,
+  "homophones": 10,
+  "loader": { "file": "Bangers-Regular.ttf", "text": "Inking the page… 0123456789%" },
+  "frames": { "dir": "public/frames", "glob": "*.jpg", "pack": 8, "watermark": "NRUNNER1", "quality": 82 },
+  "protectedCopy": [{ "from": "public/lottie", "to": "lottie", "glob": "*.json" }],
+  "renderedPath": ".helmet/rendered.json",
+  "out": { "protected": "dist/_p", "public": "dist", "work": ".helmet" }
+}

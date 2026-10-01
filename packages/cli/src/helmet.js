@@ -46,11 +46,13 @@ switch (cmd) {
     break;
   }
   case "audit": {
-    if (!args[0]) fail("usage: helmet audit <distDir> [--copy rendered.json]");
+    if (!args[0]) fail("usage: helmet audit <distDir> [--copy rendered.json] [--ignore \"Brand,Other\"]");
     const ci = args.indexOf("--copy");
     let copy = [];
     if (ci >= 0 && existsSync(args[ci + 1])) copy = Object.values(JSON.parse(readFileSync(args[ci + 1], "utf8")));
-    const { errors, warnings } = auditDist(args[0], { copy });
+    const ii = args.indexOf("--ignore");
+    const ignore = ii >= 0 ? (args[ii + 1] ?? "").split(",").map((s) => s.trim()).filter(Boolean) : [];
+    const { errors, warnings } = auditDist(args[0], { copy, ignore });
     for (const w of warnings) console.warn("⚠ " + w);
     if (errors.length) { for (const e of errors) console.error("✘ " + e); console.error(`\nhelmet audit: ${errors.length} problem(s)`); process.exit(1); }
     console.log(`helmet audit: clean${warnings.length ? ` (${warnings.length} warning(s))` : ""}`);

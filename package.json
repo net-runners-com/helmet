@@ -6,7 +6,8 @@
   "description": "Helmet — a reusable mechanism to raise the cost of cloning a website and to leave evidence when it is copied.",
   "workspaces": [
     "packages/*",
-    "examples/minimal"
+    "examples/minimal",
+    "examples/night-runner"
   ],
   "scripts": {
     "test": "npm test --workspaces --if-present",

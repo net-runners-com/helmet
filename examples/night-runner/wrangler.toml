@@ -1,0 +1,7 @@
+name = "night-runner"
+pages_build_output_dir = "dist"
+compatibility_date = "2026-09-01"
+
+[vars]
+# Cloudflare's always-pass test key. Replace with a real widget key before relying on it.
+TURNSTILE_SITEKEY = "1x00000000000000000000AA"

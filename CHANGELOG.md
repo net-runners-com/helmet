@@ -27,5 +27,7 @@ Initial extraction of the Helmet mechanism into reusable packages.
   `legal` (terms / ai-policy / robots / ai.txt / tdmrep), and `decode-canary`.
 - Worker now serves policy/legal pages (and their clean URLs) to blocked agents so
   the prohibition is discoverable.
+- `examples/night-runner` — full complex site (comic shader / GSAP / Lottie / 193
+  frames) migrated onto the library; adds `protectedCopy` and `audit --ignore`.
 - `examples/minimal` — reference site built on the library. `examples/standalone` —
   original proof of concept, unchanged.

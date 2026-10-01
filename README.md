@@ -92,6 +92,10 @@ default (`helmet assets`), or run `py/helmet_assets.py` under your own venv.
 
 - **`examples/minimal`** — a small landing page built on the library. The reference
   for how the pieces connect; builds and runs with `npm run dev:example`.
+- **`examples/night-runner`** — a full, complex site on the library: a scroll-driven
+  comic (WebGL shader, GSAP, Lottie, 193 frames) served entirely through Helmet —
+  copy, fonts, frames, and Lottie all behind the session. Shows `protectedCopy`
+  (arbitrary assets behind the signed/masked path) and `audit --ignore`.
 - **`examples/standalone`** — the original, pre-library proof of concept, kept as-is.
 
 ## Operational notes

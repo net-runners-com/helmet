@@ -1,0 +1,7 @@
+# (c) 2026 Night Runner. All rights reserved.
+# No use of any content on this site (text, images, video, code, design) for AI/ML
+# training, fine-tuning, retrieval, or generation of derivative/clone sites.
+# See /terms and /ai-policy.
+User-Agent: *
+Disallow: /
+Disallow: *

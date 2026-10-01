@@ -24,22 +24,25 @@ function walk(dir, base = dir) {
  * @param {string} distDir
  * @param {object} [opts]
  * @param {string[]} [opts.copy]       rendered copy strings that must NOT appear in public files
+ * @param {string[]} [opts.ignore]     public strings to exclude from the copy check (e.g. the brand name)
  * @param {string[]} [opts.keep]       class/id names allowed to stay readable
  * @param {string[]} [opts.excludeDirs] protected dirs not served as public files
  * @returns {{errors: string[], warnings: string[]}}
  */
-export function auditDist(distDir, { copy = [], keep = DEFAULT_KEEP, excludeDirs = ["_p"] } = {}) {
+export function auditDist(distDir, { copy = [], ignore = [], keep = DEFAULT_KEEP, excludeDirs = ["_p"] } = {}) {
   const errors = [];
   const warnings = [];
   const keepSet = new Set(keep);
+  const ignoreSet = new Set(ignore.map((s) => s.trim()));
 
   const files = walk(distDir).map((p) => ({ abs: p, rel: "/" + relative(distDir, p).split(sep).join("/") }));
   const publicText = files.filter(
     (f) => TEXT_EXT.has(extname(f.rel)) && f.rel !== "/_worker.js" && !excludeDirs.includes(f.rel.split("/")[1]),
   );
 
-  // 1. Copy must not appear verbatim anywhere public (ignore very short strings).
-  const needles = copy.map((s) => s.trim()).filter((s) => s.length >= 8);
+  // 1. Copy must not appear verbatim anywhere public (ignore very short strings and
+  //    whitelisted public strings such as the brand name).
+  const needles = copy.map((s) => s.trim()).filter((s) => s.length >= 8 && !ignoreSet.has(s));
   for (const f of publicText) {
     const text = readFileSync(f.abs, "utf8");
     for (const n of needles) if (text.includes(n)) errors.push(`copy leak: ${JSON.stringify(n.slice(0, 40) + "…")} found in ${f.rel}`);

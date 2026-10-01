@@ -12,6 +12,7 @@ Run under a venv with: fonttools brotli numpy opencv-python-headless invisible-w
 import json
 import random
 import secrets
+import shutil
 import struct
 import sys
 import unicodedata
@@ -181,6 +182,21 @@ def build_images(cfg, out_protected):
         print(f"image: {s.name} -> {dst.name}, watermark decode {ok}")
 
 
+def build_protected_copy(cfg, out_protected):
+    # Copy arbitrary static dirs into the protected path (served signed + masked),
+    # e.g. Lottie JSON or any asset the client fetches through the session.
+    for entry in cfg.get("protectedCopy", []):
+        src = Path(entry["from"])
+        dst = out_protected / entry.get("to", src.name)
+        dst.mkdir(parents=True, exist_ok=True)
+        n = 0
+        for f in src.glob(entry.get("glob", "*")):
+            if f.is_file():
+                shutil.copyfile(f, dst / f.name)
+                n += 1
+        print(f"protected copy: {n} files {src} -> {dst}")
+
+
 def main(cfg_path):
     cfg = json.loads(Path(cfg_path).read_text())
     work = Path(cfg["out"]["work"])
@@ -193,6 +209,7 @@ def main(cfg_path):
     build_loader(cfg, out_public / "fonts")
     build_frames(cfg, out_protected / "frames", work)
     build_images(cfg, out_protected)
+    build_protected_copy(cfg, out_protected)
 
 
 if __name__ == "__main__":
