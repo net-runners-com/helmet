@@ -34,6 +34,10 @@ switch (cmd) {
     if (!args.length) fail("usage: helmet timestamp stamp <dir> [--out dir] | upgrade <f.ots> | verify <manifest> <f.ots>");
     uv("helmet_timestamp.py", args, ["opentimestamps-client"]);
     break;
+  case "c2pa":
+    if (!args.length) fail('usage: helmet c2pa sign <image> [--author N --copyright T] | verify <image>');
+    uv("helmet_c2pa.py", args, ["c2pa-python"]);
+    break;
   case "verify-watermark":
     if (args.length < 2) fail("usage: helmet verify-watermark <text> <image> [more...]");
     uv("helmet_verify.py", args, ["numpy", "opencv-python-headless", "invisible-watermark"]);
@@ -99,6 +103,7 @@ switch (cmd) {
   verify-watermark <text> <img>...  check the invisible image watermark
   monitor <base.png> <suspect>...   perceptual-hash similarity (clone / look-alike detection)
   timestamp stamp <dir>             proof-of-existence of a build via OpenTimestamps (Bitcoin)
+  c2pa sign|verify <image>          embed / read signed Content Credentials (provenance)
   init                              write starter helmet.config.js / helmet.assets.json
 `);
     process.exit(cmd ? 1 : 0);

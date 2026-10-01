@@ -175,6 +175,19 @@ readable (non-obfuscated) class/id names in `index.html`, or an allowlist that
 exposes a protected path. Chain it last in the build (`… && helmet audit dist
 --copy .helmet/rendered.json`) so a regression can't ship.
 
+## Content Credentials (C2PA)
+
+`helmet c2pa sign <image> --author "<name>" --copyright "<notice>"` embeds a
+cryptographically signed [C2PA](https://c2pa.org) provenance manifest (who / when /
+how, author, copyright) into an image; `helmet c2pa verify <image>` reads it and
+reports the validation state. Signed and tamper-evident, it is a stronger origin
+claim than a bare watermark — apply it to images you **distribute publicly**
+(press kit, og:image, downloads), not to the masked in-session assets.
+
+> The demo auto-generates a local CA + leaf certificate (`.helmet/c2pa/`). Validators
+> show the credential but flag the signer as untrusted; for production, sign with a
+> certificate from a C2PA-recognized authority. Needs `openssl`.
+
 ## Proof of existence (timestamp)
 
 `helmet timestamp stamp <distDir>` hashes every built file into a manifest and
