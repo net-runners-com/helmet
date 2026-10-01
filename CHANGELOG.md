@@ -31,6 +31,9 @@ Initial extraction of the Helmet mechanism into reusable packages.
   (provenance + a signed CAWG "Do Not Train" AI opt-out) in distributed images.
   SynthID is documented as not self-adoptable (proprietary); the open DWT-DCT-SVD
   watermark fills its metadata-strip-survival role.
+- `@helmet/cli`: `archive` — Wayback Machine evidence preservation (Save Page Now +
+  snapshot confirmation) for your site and a suspected clone; `--check` looks up the
+  latest snapshot.
 - `@helmet/cli`: `hunt` — keyword-driven clone/copycat search over DuckDuckGo +
   note.com (pure fetch, no browser/key); `hunt keywords` auto-builds the list from
   your site; `--verify` flags candidates carrying verbatim copy or CSS-module

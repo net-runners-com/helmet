@@ -217,6 +217,23 @@ survives metadata loss) is described here:
 Helmet realizes the same two layers as **C2PA (signed metadata) + DWT-DCT-SVD
 (strip-resistant watermark)**.
 
+## Evidence preservation (`helmet archive`)
+
+When you find a copy, capture it — and your own site — into the Internet Archive's
+Wayback Machine before the copy is changed or taken down:
+
+```bash
+helmet archive https://yoursite.com/ https://the-clone.example/ [more...] [--out snapshots.json]
+helmet archive --list urls.txt
+helmet archive --check https://the-clone.example/        # look up the latest snapshot, no save
+```
+
+Each URL gets a timestamped, third-party snapshot (Save Page Now), confirmed via the
+availability API and recorded with its archive URL. The dated capture is independent
+evidence of what a page looked like and when — useful alongside `hunt` (find the
+copy) and `timestamp` (prove your own priority). Pure fetch, no key. Save Page Now is
+asynchronous; a slow host shows `queued` — re-run with `--check` to confirm.
+
 ## Proof of existence (timestamp)
 
 `helmet timestamp stamp <distDir>` hashes every built file into a manifest and

@@ -6,6 +6,7 @@ import { fileURLToPath } from "node:url";
 import { writePublicAllowlist, collectNames, auditDist, writeLegal } from "@helmet/build";
 import { extractTextCanary, stripCanary } from "@helmet/core";
 import { hunt, huntKeywords } from "./hunt.js";
+import { archive, readUrlList } from "./archive.js";
 
 const PY_DIR = fileURLToPath(new URL("../../../py/", import.meta.url));
 const UV_WITH = ["fonttools", "brotli", "numpy", "opencv-python-headless", "invisible-watermark"];
@@ -123,6 +124,23 @@ switch (cmd) {
     }).catch((e) => fail("hunt: " + e.message));
     break;
   }
+  case "archive": {
+    const opt = (k, d) => { const i = args.indexOf(k); return i >= 0 ? args[i + 1] : d; };
+    const checkOnly = args.includes("--check");
+    const listFile = opt("--list");
+    let urls = args.filter((a) => /^https?:\/\//.test(a));
+    if (listFile && existsSync(listFile)) urls = urls.concat(readUrlList(listFile));
+    if (!urls.length) fail('usage: helmet archive <url> [more...] [--list file] [--check]');
+    const out = opt("--out");
+    archive({ urls, checkOnly, log: (l) => console.log(l) })
+      .then((res) => {
+        const n = res.filter((r) => r.archived).length;
+        console.log(`\narchive: ${n}/${res.length} captured${res.some((r) => !r.archived) ? " (others queued — re-run with --check later)" : ""}`);
+        if (out) { writeFileSync(out, JSON.stringify(res, null, 2)); console.log(`snapshots -> ${out}`); }
+      })
+      .catch((e) => fail("archive: " + e.message));
+    break;
+  }
   case "init":
     scaffold();
     break;
@@ -141,6 +159,7 @@ switch (cmd) {
   monitor scan --searx <url> ...    find clone candidates via SearXNG, flag canary/phrase hits
   hunt keywords --target <url>      auto-build a clone-hunt keyword list from your site
   hunt --keywords <f> [--verify]    search (DuckDuckGo + note) for copies, verify verbatim/fingerprint
+  archive <url> [...] [--check]     preserve evidence via the Wayback Machine (timestamped snapshot)
   timestamp stamp <dir>             proof-of-existence of a build via OpenTimestamps (Bitcoin)
   c2pa sign|verify <image>          embed / read signed Content Credentials (provenance)
   init                              write starter helmet.config.js / helmet.assets.json
